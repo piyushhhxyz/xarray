@@ -43,6 +43,13 @@ Breaking changes
   By `Aureliana Barghini <https://github.com/aurghs>`_.
 
 
+Deprecations
+~~~~~~~~~~~~
+- The ``dim`` argument to :py:meth:`DataArray.integrate` is being deprecated in
+  favor of ``coord``, for consistency with :py:meth:`Dataset.integrate` and
+  :py:meth:`DataArray.differentiate`. Using ``dim`` will continue to work but
+  will emit a ``FutureWarning`` (:issue:`3993`).
+
 New Features
 ~~~~~~~~~~~~
 - Significantly higher ``unstack`` performance on numpy-backed arrays which

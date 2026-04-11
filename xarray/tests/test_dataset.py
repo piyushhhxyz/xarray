@@ -6656,6 +6656,35 @@ def test_trapz_datetime(dask, which_datetime):
     assert_allclose(actual, actual2 / 24.0)
 
 
+def test_integrate_deprecate_dim_arg():
+    da = xr.DataArray(
+        np.arange(12).reshape(4, 3),
+        dims=["x", "y"],
+        coords={"x": [0, 0.1, 1.1, 1.2]},
+    )
+
+    # using coord= works without warning
+    result_coord = da.integrate(coord="x")
+
+    # using dim= emits FutureWarning but still works
+    with pytest.warns(FutureWarning, match="dim"):
+        result_dim = da.integrate(dim="x")
+
+    assert_identical(result_coord, result_dim)
+
+    # positional arg works without warning (maps to coord)
+    result_positional = da.integrate("x")
+    assert_identical(result_coord, result_positional)
+
+    # passing both raises ValueError
+    with pytest.raises(ValueError, match="Cannot pass both"):
+        da.integrate(coord="x", dim="x")
+
+    # passing neither raises ValueError
+    with pytest.raises(ValueError, match="Must supply"):
+        da.integrate()
+
+
 def test_no_dict():
     d = Dataset()
     with pytest.raises(AttributeError):
