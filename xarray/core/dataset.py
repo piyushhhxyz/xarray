@@ -366,7 +366,7 @@ class DataVariables(Mapping[Any, "DataArray"]):
 
     def __len__(self) -> int:
         return len(self._dataset._variables) - len(
-            self._dataset._variables.keys() & self._dataset._coord_names
+            self._dataset._coord_names & self._dataset._variables.keys()
         )
 
     def __contains__(self, key: Hashable) -> bool:
