@@ -3253,6 +3253,17 @@ class TestDataset:
         with pytest.raises(ValueError, match=r".*not coordinates with an index"):
             ds.reset_index("y")
 
+    def test_reset_index_drop_clean_coord_names(self) -> None:
+        # regression test for GH6992
+        ds = Dataset(coords={"a": ("x", [1, 2, 3]), "b": ("x", ["a", "b", "c"])})
+        result = ds.set_index(z=["a", "b"]).reset_index("z", drop=True)
+        # _coord_names should not contain names absent from _variables
+        assert result._coord_names <= set(result._variables)
+        assert len(result.data_vars) == 0
+        assert list(result.data_vars) == []
+        # repr should not raise
+        repr(result)
+
     def test_reset_index_keep_attrs(self) -> None:
         coord_1 = DataArray([1, 2], dims=["coord_1"], attrs={"attrs": True})
         ds = Dataset({}, {"coord_1": coord_1})
